@@ -1,0 +1,4 @@
+name: Factorio
+version: '0.1.0'
+main: com.nuutrai.factorio.Factorio
+api-version: '1.21'
