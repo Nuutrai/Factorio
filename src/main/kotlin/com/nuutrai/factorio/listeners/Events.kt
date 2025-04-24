@@ -24,7 +24,7 @@ class Events : Listener {
         const val TIME_TO_WAIT = 100
         const val TIME_TO_PURGE = 1000
 
-        fun handlePlaceCooldown(p: Player) {
+        fun handlePlaceCooldown(p: Player): Boolean {
 
             val cooldown = cooldowns[p] ?: Instant.now().minusMillis(TIME_TO_WAIT.toLong()).also { cooldowns[p] = it}
 
@@ -32,15 +32,16 @@ class Events : Listener {
              * Checks
              */
             if (cooldown > Instant.now())
-                return
-            if ((cooldowns[p]?: return).isAfter(Instant.now()))
-                return
+                return false
+            if (cooldown.isAfter(Instant.now()))
+                return false
 
             Bukkit.getScheduler().runTaskLater(instance, Runnable {
                 if ((cooldown).isAfter(Instant.now().minusMillis(TIME_TO_PURGE.toLong()))) return@Runnable
                 cooldowns.remove(p)
             }, TIME_TO_PURGE.toLong())
 
+            return true
 
         }
     }
@@ -51,7 +52,9 @@ class Events : Listener {
 
         if (!verifyWorld(p)) return
 
-        handlePlaceCooldown(p)
+        if (!handlePlaceCooldown(p)) return
+
+
 
     }
 
